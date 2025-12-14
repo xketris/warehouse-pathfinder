@@ -15,7 +15,6 @@ export const PathVisualization: React.FC<PathVisualizationProps> = ({
 }) => {
   return (
     <>
-      {/* Full route (very faint) */}
       {fullRouteString && (
         <path
           d={fullRouteString}
@@ -28,7 +27,6 @@ export const PathVisualization: React.FC<PathVisualizationProps> = ({
         />
       )}
 
-      {/* Upcoming path (animated dotted) */}
       {upcomingPathString && (
         <path
           d={upcomingPathString}
@@ -43,7 +41,6 @@ export const PathVisualization: React.FC<PathVisualizationProps> = ({
         />
       )}
 
-      {/* Completed path (solid) */}
       {completedPathString && (
         <path
           d={completedPathString}

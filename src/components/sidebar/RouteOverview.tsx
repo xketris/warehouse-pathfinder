@@ -18,7 +18,6 @@ export const RouteOverview: React.FC<RouteOverviewProps> = ({
         📍 Route Overview
       </h3>
       <div className="space-y-2">
-        {/* Start */}
         <div
           className={`flex items-center gap-3 p-2 rounded-lg ${
             currentSegmentIndex < 0
@@ -37,7 +36,6 @@ export const RouteOverview: React.FC<RouteOverviewProps> = ({
           )}
         </div>
 
-        {/* Segments */}
         {segments.map((segment, i) => {
           const isCurrent = i === currentSegmentIndex && animationProgress < 1;
           const isCompleted =

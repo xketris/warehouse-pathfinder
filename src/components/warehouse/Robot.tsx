@@ -17,13 +17,10 @@ export const Robot: React.FC<RobotProps> = ({ position, isAnimating }) => {
         transition: isAnimating ? 'none' : 'transform 0.15s ease-out',
       }}
     >
-      {/* Robot shadow */}
       <ellipse rx={12} ry={4} cy={14} fill="#00000020" />
 
-      {/* Robot body */}
       <circle r={16} fill="#3b82f6" stroke="#2563eb" strokeWidth="3" />
 
-      {/* Robot face */}
       <circle r={3} fill="white" cx="-5" cy="-2" />
       <circle r={3} fill="white" cx="5" cy="-2" />
       <circle r={1.5} fill="#1e3a8a" cx="-5" cy="-2" />

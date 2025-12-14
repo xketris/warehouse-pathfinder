@@ -31,7 +31,6 @@ export const useWarehouseEditor = ({
       switch (editMode) {
         case 'wall':
           if (warehouse[y][x] === 0) {
-            // Don't place wall on start or packages
             if (start.x === x && start.y === y) return;
             if (packages.some((p) => p.x === x && p.y === y)) return;
 

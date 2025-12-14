@@ -59,7 +59,6 @@ export const ProgressInfo: React.FC<ProgressInfoProps> = ({
         </div>
       </div>
 
-      {/* Segment progress bar */}
       <div className="mt-4">
         <div className="flex gap-1">
           {segments.map((_, i) => (

@@ -51,7 +51,6 @@ export const WarehouseGrid: React.FC<WarehouseGridProps> = ({
         className="mx-auto"
         style={{ background: '#f8fafc' }}
       >
-        {/* Grid cells */}
         {warehouse.map((row, y) =>
           row.map((cell, x) => (
             <GridCell
@@ -65,7 +64,6 @@ export const WarehouseGrid: React.FC<WarehouseGridProps> = ({
           ))
         )}
 
-        {/* Path visualization */}
         <PathVisualization
           fullRouteString={fullRouteString}
           completedPathString={completedPathString}
@@ -73,7 +71,6 @@ export const WarehouseGrid: React.FC<WarehouseGridProps> = ({
           dashOffset={dashOffset}
         />
 
-        {/* Packages */}
         {packages.map((pkg, i) => (
           <Package
             key={`pkg-${i}`}
@@ -84,10 +81,8 @@ export const WarehouseGrid: React.FC<WarehouseGridProps> = ({
           />
         ))}
 
-        {/* Start point */}
         <StartPoint position={start} />
 
-        {/* Robot */}
         <Robot position={currentPosition} isAnimating={isAnimating} />
       </svg>
     </div>

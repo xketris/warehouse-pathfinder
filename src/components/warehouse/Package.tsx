@@ -21,7 +21,6 @@ export const Package: React.FC<PackageProps> = ({
         position.y * CELL_SIZE + CELL_SIZE / 2
       })`}
     >
-      {/* Highlight ring for next package */}
       {isNext && !isCollected && (
         <circle
           r={20}
@@ -46,7 +45,6 @@ export const Package: React.FC<PackageProps> = ({
         </circle>
       )}
 
-      {/* Package box */}
       <rect
         x={-14}
         y={-14}
@@ -62,7 +60,6 @@ export const Package: React.FC<PackageProps> = ({
         }}
       />
 
-      {/* Package content */}
       {isCollected ? (
         <text
           textAnchor="middle"

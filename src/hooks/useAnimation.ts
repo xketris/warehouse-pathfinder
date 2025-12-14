@@ -159,12 +159,10 @@ export const useAnimation = ({
   const segmentsLengthRef = useRef<number>(segments.length);
   const segmentsRef = useRef<RouteSegment[]>(segments);
 
-  // Update refs (this is safe, we're just storing for use in effects/callbacks)
   useEffect(() => {
     segmentsRef.current = segments;
   }, [segments]);
 
-  // Reset when segments length changes (detected via effect)
   useEffect(() => {
     if (segments.length !== segmentsLengthRef.current) {
       segmentsLengthRef.current = segments.length;
@@ -172,7 +170,6 @@ export const useAnimation = ({
     }
   }, [segments.length]);
 
-  // Animation loop
   useEffect(() => {
     if (!state.isAnimating) {
       return;
@@ -188,8 +185,7 @@ export const useAnimation = ({
       const deltaTime = currentTime - lastTime;
       lastTime = currentTime;
 
-      // Normalize speed to be frame-rate independent
-      const normalizedSpeed = speed * (deltaTime / 16.67); // 16.67ms = 60fps baseline
+      const normalizedSpeed = speed * (deltaTime / 16.67);
 
       const newProgress = state.animationProgress + normalizedSpeed;
 
@@ -200,7 +196,6 @@ export const useAnimation = ({
           const packageIndex = currentSegment?.packageIndex ?? null;
 
           if (nextIdx >= segmentsRef.current.length) {
-            // Collect all package indices
             const allPackageIndices = segmentsRef.current
               .filter((seg) => seg.packageIndex !== null)
               .map((seg) => seg.packageIndex!);

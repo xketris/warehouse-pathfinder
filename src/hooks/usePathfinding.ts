@@ -17,7 +17,6 @@ export const usePathfinding = ({
   start,
   packages,
 }: UsePathfindingProps): UsePathfindingReturn => {
-  // Use useMemo instead of useState + useEffect
   const segments = useMemo(() => {
     return findRouteSegments(grid, start, packages);
   }, [grid, start, packages]);
