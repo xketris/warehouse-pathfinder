@@ -16,45 +16,51 @@ export const ProgressInfo: React.FC<ProgressInfoProps> = ({
   collectedPackages,
   totalPackages,
 }) => {
-  const currentStopLabel =
-    currentSegmentIndex < 0
-      ? 'Start'
-      : currentSegmentIndex >= segments.length - 1 && animationProgress >= 1
-      ? 'Complete'
-      : `Package ${
-          segments[currentSegmentIndex]?.packageIndex !== null
-            ? segments[currentSegmentIndex].packageIndex! + 1
-            : 'Return'
-        }`;
+  const currentSegment = segments[currentSegmentIndex];
+  const nextSegment = segments[currentSegmentIndex + 1];
 
-  const nextStopLabel =
-    currentSegmentIndex < segments.length - 1
-      ? segments[currentSegmentIndex + 1]?.packageIndex !== null
-        ? `Package ${segments[currentSegmentIndex + 1].packageIndex! + 1}`
-        : 'Return to Start'
-      : 'Complete';
+  const currentStopLabel = (() => {
+    if (currentSegmentIndex < 0) return 'Start';
+    if (currentSegmentIndex >= segments.length - 1 && animationProgress >= 1) return 'Complete';
+    
+    if (!currentSegment) return 'Unknown';
+
+    return currentSegment.packageIndex != null
+      ? `Package ${currentSegment.packageIndex + 1}`
+      : 'Return';
+  })();
+
+  const nextStopLabel = (() => {
+    if (currentSegmentIndex >= segments.length - 1) return 'Complete';
+    
+    if (!nextSegment) return '—';
+
+    return nextSegment.packageIndex != null
+      ? `Package ${nextSegment.packageIndex + 1}`
+      : 'Return to Start';
+  })();
 
   return (
-    <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+    <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <span className="text-sm text-slate-500">Current Location</span>
+          <span className="text-sm text-slate-500 font-medium">Current Location</span>
           <div className="text-lg font-semibold text-slate-800">
             {currentStopLabel}
           </div>
         </div>
 
         <div className="text-center">
-          <span className="text-sm text-slate-500">Packages Collected</span>
+          <span className="text-sm text-slate-500 font-medium">Packages Collected</span>
           <div className="text-2xl font-bold text-emerald-600">
             {collectedPackages.size} / {totalPackages}
           </div>
         </div>
 
         <div className="text-right">
-          <span className="text-sm text-slate-500">Next Stop</span>
+          <span className="text-sm text-slate-500 font-medium">Next Stop</span>
           <div className="text-lg font-semibold text-blue-600">
-            {currentSegmentIndex < segments.length - 1 ? nextStopLabel : '—'}
+            {nextStopLabel}
           </div>
         </div>
       </div>
@@ -86,11 +92,11 @@ export const ProgressInfo: React.FC<ProgressInfoProps> = ({
             </div>
           ))}
         </div>
-        <div className="flex justify-between mt-1 text-xs text-slate-400">
+        <div className="flex justify-between mt-1 text-xs text-slate-400 font-medium px-1">
           <span>Start</span>
           {segments.map((seg, i) => (
             <span key={i}>
-              {seg.packageIndex !== null ? `P${seg.packageIndex + 1}` : 'End'}
+              {seg.packageIndex != null ? `P${seg.packageIndex + 1}` : 'End'}
             </span>
           ))}
         </div>

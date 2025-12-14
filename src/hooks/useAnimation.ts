@@ -2,7 +2,6 @@ import { useReducer, useEffect, useRef, useCallback } from 'react';
 import { RouteSegment } from '../types';
 import { ANIMATION_SPEED } from '../constants';
 
-// State type
 interface AnimationState {
   currentSegmentIndex: number;
   animationProgress: number;
@@ -11,7 +10,6 @@ interface AnimationState {
   collectedPackages: Set<number>;
 }
 
-// Action types
 type AnimationAction =
   | { type: 'RESET' }
   | { type: 'START_NEXT_SEGMENT'; nextIndex: number }
@@ -23,7 +21,6 @@ type AnimationAction =
   | { type: 'COMPLETE_FULL_ROUTE'; finalIndex: number; allPackageIndices: number[] }
   | { type: 'STOP_ANIMATION' };
 
-// Reducer
 const animationReducer = (
   state: AnimationState,
   action: AnimationAction
@@ -126,7 +123,6 @@ const animationReducer = (
   }
 };
 
-// Initial state
 const createInitialState = (): AnimationState => ({
   currentSegmentIndex: -1,
   animationProgress: 0,
@@ -139,36 +135,31 @@ interface UseAnimationProps {
   segments: RouteSegment[];
 }
 
-interface UseAnimationReturn {
-  currentSegmentIndex: number;
-  animationProgress: number;
-  isAnimating: boolean;
-  isShowingFullRoute: boolean;
-  collectedPackages: Set<number>;
-  goToNextPackage: () => void;
-  goToPrevPackage: () => void;
-  showFullRoute: () => void;
-  resetNavigation: () => void;
-}
-
 export const useAnimation = ({
   segments,
-}: UseAnimationProps): UseAnimationReturn => {
+}: UseAnimationProps) => {
   const [state, dispatch] = useReducer(animationReducer, null, createInitialState);
-  const animationRef = useRef<number | null>(null);
-  const segmentsLengthRef = useRef<number>(segments.length);
+  
+  const animationFrameRef = useRef<number | null>(null);
   const segmentsRef = useRef<RouteSegment[]>(segments);
+  const progressRef = useRef(0);
+  const lastTimeRef = useRef<number>(0);
 
   useEffect(() => {
     segmentsRef.current = segments;
   }, [segments]);
 
+  const segmentsLengthRef = useRef(segments.length);
   useEffect(() => {
     if (segments.length !== segmentsLengthRef.current) {
       segmentsLengthRef.current = segments.length;
       dispatch({ type: 'RESET' });
     }
   }, [segments.length]);
+
+  useEffect(() => {
+    progressRef.current = state.animationProgress;
+  }, [state.isAnimating, state.currentSegmentIndex]);
 
   useEffect(() => {
     if (!state.isAnimating) {
@@ -179,17 +170,20 @@ export const useAnimation = ({
       ? ANIMATION_SPEED.FAST
       : ANIMATION_SPEED.NORMAL;
 
-    let lastTime = performance.now();
+    lastTimeRef.current = performance.now();
 
     const animate = (currentTime: number) => {
-      const deltaTime = currentTime - lastTime;
-      lastTime = currentTime;
+      if (currentTime < lastTimeRef.current) {
+        lastTimeRef.current = currentTime;
+      }
+
+      const deltaTime = currentTime - lastTimeRef.current;
+      lastTimeRef.current = currentTime;
 
       const normalizedSpeed = speed * (deltaTime / 16.67);
+      progressRef.current += normalizedSpeed;
 
-      const newProgress = state.animationProgress + normalizedSpeed;
-
-      if (newProgress >= 1) {
+      if (progressRef.current >= 1) {
         if (state.isShowingFullRoute) {
           const nextIdx = state.currentSegmentIndex + 1;
           const currentSegment = segmentsRef.current[state.currentSegmentIndex];
@@ -206,12 +200,13 @@ export const useAnimation = ({
               allPackageIndices,
             });
           } else {
+            progressRef.current = 0;
             dispatch({
               type: 'MOVE_TO_NEXT_SEGMENT_IN_FULL_ROUTE',
               nextIndex: nextIdx,
               collectedPackageIndex: packageIndex,
             });
-            animationRef.current = requestAnimationFrame(animate);
+            animationFrameRef.current = requestAnimationFrame(animate);
           }
         } else {
           const currentSegment = segmentsRef.current[state.currentSegmentIndex];
@@ -219,23 +214,23 @@ export const useAnimation = ({
           dispatch({ type: 'COMPLETE_SEGMENT', packageIndex });
         }
       } else {
-        dispatch({ type: 'UPDATE_PROGRESS', progress: newProgress });
-        animationRef.current = requestAnimationFrame(animate);
+        dispatch({ type: 'UPDATE_PROGRESS', progress: progressRef.current });
+        animationFrameRef.current = requestAnimationFrame(animate);
       }
     };
 
-    animationRef.current = requestAnimationFrame(animate);
+    animationFrameRef.current = requestAnimationFrame(animate);
 
     return () => {
-      if (animationRef.current !== null) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = null;
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [state.isAnimating, state.isShowingFullRoute, state.currentSegmentIndex, state.animationProgress]);
+  }, [state.isAnimating, state.isShowingFullRoute, state.currentSegmentIndex]);
 
   const goToNextPackage = useCallback(() => {
     if (state.currentSegmentIndex < segmentsRef.current.length - 1 && !state.isAnimating) {
+      progressRef.current = 0;
       dispatch({
         type: 'START_NEXT_SEGMENT',
         nextIndex: state.currentSegmentIndex + 1,
@@ -258,6 +253,7 @@ export const useAnimation = ({
 
   const showFullRoute = useCallback(() => {
     if (segmentsRef.current.length > 0) {
+      progressRef.current = 0;
       dispatch({ type: 'START_FULL_ROUTE' });
     }
   }, []);
@@ -267,11 +263,7 @@ export const useAnimation = ({
   }, []);
 
   return {
-    currentSegmentIndex: state.currentSegmentIndex,
-    animationProgress: state.animationProgress,
-    isAnimating: state.isAnimating,
-    isShowingFullRoute: state.isShowingFullRoute,
-    collectedPackages: state.collectedPackages,
+    ...state,
     goToNextPackage,
     goToPrevPackage,
     showFullRoute,
