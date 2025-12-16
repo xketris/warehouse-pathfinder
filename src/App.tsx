@@ -13,13 +13,11 @@ import {
   getPositionAtProgress,
 } from './utils/geometry';
 
-// Hooks
 import { usePathfinding } from './hooks/usePathfinding';
 import { useAnimation } from './hooks/useAnimation';
 import { useDashAnimation } from './hooks/useDashAnimation';
 import { useWarehouseEditor } from './hooks/useWarehouseEditor';
 
-// Components
 import { Header } from './components/layout/Header';
 import { WarehouseGrid } from './components/warehouse/WarehouseGrid';
 import { NavigationControls } from './components/controls/NavigationControls';
@@ -29,25 +27,21 @@ import { RouteOverview } from './components/sidebar/RouteOverview';
 import { Legend } from './components/sidebar/Legend';
 import { Instructions } from './components/sidebar/Instructions';
 
-// Helper to create a fresh copy of the default warehouse
 const createDefaultWarehouse = () => DEFAULT_WAREHOUSE.map((row) => [...row]);
 const createDefaultPackages = () => DEFAULT_PACKAGES.map((p) => ({ ...p }));
 
 const App: React.FC = () => {
-  // Warehouse state
   const [warehouse, setWarehouse] = useState<number[][]>(createDefaultWarehouse);
   const [packages, setPackages] = useState<Point[]>(createDefaultPackages);
   const [start, setStart] = useState<Point>({ ...DEFAULT_START });
   const [editMode, setEditMode] = useState<EditMode>('none');
 
-  // Pathfinding
   const { segments } = usePathfinding({
     grid: warehouse,
     start,
     packages,
   });
 
-  // Animation
   const {
     currentSegmentIndex,
     animationProgress,
@@ -61,10 +55,8 @@ const App: React.FC = () => {
     segments,
   });
 
-  // Dash animation for dotted line
   const dashOffset = useDashAnimation();
 
-  // Warehouse editor
   const { handleCellClick } = useWarehouseEditor({
     warehouse,
     packages,
@@ -75,7 +67,6 @@ const App: React.FC = () => {
     setStart,
   });
 
-  // Calculate current position
   const currentPosition = useMemo((): Point => {
     if (currentSegmentIndex < 0) {
       return start;
@@ -87,7 +78,6 @@ const App: React.FC = () => {
     return getPositionAtProgress(segment.path, animationProgress, start);
   }, [currentSegmentIndex, segments, animationProgress, start]);
 
-  // Memoized path calculations
   const fullRoute = useMemo(() => getFullRoute(segments), [segments]);
 
   const completedPath = useMemo(
@@ -100,7 +90,6 @@ const App: React.FC = () => {
     [segments, currentSegmentIndex, animationProgress, currentPosition]
   );
 
-  // Path strings for visualization
   const fullRouteString = useMemo(
     () => createPathString(fullRoute),
     [fullRoute]
@@ -116,7 +105,6 @@ const App: React.FC = () => {
     [upcomingPath]
   );
 
-  // Reset handlers
   const handleReset = useCallback(() => {
     resetNavigation();
   }, [resetNavigation]);
@@ -132,13 +120,40 @@ const App: React.FC = () => {
     setEditMode(mode);
   }, []);
 
+  const handleResize = useCallback((newRows: number, newCols: number) => {
+    setWarehouse((prevWarehouse) => {
+      const newGrid: number[][] = Array(newRows)
+        .fill(0)
+        .map(() => Array(newCols).fill(0));
+
+      for (let y = 0; y < Math.min(prevWarehouse.length, newRows); y++) {
+        for (let x = 0; x < Math.min(prevWarehouse[0].length, newCols); x++) {
+          newGrid[y][x] = prevWarehouse[y][x];
+        }
+      }
+      return newGrid;
+    });
+
+    setPackages((prevPackages) => 
+      prevPackages.filter(p => p.x < newCols && p.y < newRows)
+    );
+
+    setStart((prevStart) => {
+      if (prevStart.x >= newCols || prevStart.y >= newRows) {
+        return { x: 0, y: 0 };
+      }
+      return prevStart;
+    });
+
+    resetNavigation();
+  }, [resetNavigation]);
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 p-6">
       <div className="max-w-7xl mx-auto">
         <Header />
 
         <div className="grid lg:grid-cols-4 gap-6">
-          {/* Main Visualization */}
           <div className="lg:col-span-3">
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
               <NavigationControls
@@ -179,7 +194,6 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Side Panel */}
           <div className="space-y-4">
             <RouteOverview
               segments={segments}
@@ -189,7 +203,10 @@ const App: React.FC = () => {
 
             <EditModePanel
               currentMode={editMode}
+              rows={warehouse.length}
+              cols={warehouse[0].length}
               onModeChange={handleEditModeChange}
+              onResize={handleResize}
             />
 
             <Legend />

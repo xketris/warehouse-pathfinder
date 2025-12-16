@@ -73,7 +73,7 @@ export const ProgressInfo: React.FC<ProgressInfoProps> = ({
               className="flex-1 h-2 rounded-full overflow-hidden bg-slate-200"
             >
               <div
-                className={`h-full transition-all duration-300 ${
+                className={`h-full ${
                   i < currentSegmentIndex
                     ? 'bg-emerald-500'
                     : i === currentSegmentIndex
