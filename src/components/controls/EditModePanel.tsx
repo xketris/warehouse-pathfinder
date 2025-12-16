@@ -6,12 +6,12 @@ interface EditModePanelProps {
   onModeChange: (mode: EditMode) => void;
 }
 
-const EDIT_MODES: { mode: EditMode; icon: string; label: string }[] = [
-  { mode: 'none', icon: '👁️', label: 'View' },
-  { mode: 'wall', icon: '🧱', label: 'Add Wall' },
-  { mode: 'erase', icon: '🗑️', label: 'Erase' },
-  { mode: 'package', icon: '📦', label: 'Package' },
-  { mode: 'start', icon: '🚩', label: 'Start' },
+const EDIT_MODES: { mode: EditMode; label: string }[] = [
+  { mode: 'none', label: 'View' },
+  { mode: 'wall', label: 'Add Wall' },
+  { mode: 'erase', label: 'Erase' },
+  { mode: 'package', label: 'Package' },
+  { mode: 'start', label: 'Start' },
 ];
 
 export const EditModePanel: React.FC<EditModePanelProps> = ({
@@ -21,10 +21,10 @@ export const EditModePanel: React.FC<EditModePanelProps> = ({
   return (
     <div className="bg-white rounded-xl p-5 shadow-md border border-slate-200">
       <h3 className="text-lg font-semibold mb-4 text-slate-700">
-        ✏️ Edit Mode
+        Edit Mode
       </h3>
       <div className="grid grid-cols-2 gap-2">
-        {EDIT_MODES.map(({ mode, icon, label }) => (
+        {EDIT_MODES.map(({ mode, label }) => (
           <button
             key={mode}
             onClick={() => onModeChange(mode)}
@@ -34,7 +34,6 @@ export const EditModePanel: React.FC<EditModePanelProps> = ({
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
             }`}
           >
-            <span className="text-xl">{icon}</span>
             <div className="text-xs mt-1">{label}</div>
           </button>
         ))}

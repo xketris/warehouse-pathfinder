@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export const Instructions: React.FC = () => {
   return (
@@ -8,14 +8,18 @@ export const Instructions: React.FC = () => {
       </h3>
       <ul className="space-y-2 text-sm text-blue-700">
         <li>
-          • Click <strong>Next Package</strong> to move to the next stop
+          • Click <b>Next Package</b> to move to the next stop
         </li>
-        <li>• Blue dotted line shows the upcoming path</li>
         <li>
-          • Click <strong>Show Full Route</strong> to watch the complete
+          • Blue dotted line shows the upcoming path
+        </li>
+        <li>
+          • Click <b>Show Full Route</b> to watch the complete
           animation
         </li>
-        <li>• Use edit mode to modify the warehouse layout</li>
+        <li>
+          • Use edit mode to modify the warehouse layout
+        </li>
       </ul>
     </div>
   );
