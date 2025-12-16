@@ -30,7 +30,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
                  hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed 
                  transition-all duration-200"
       >
-        ← Previous
+        Previous
       </button>
 
       <button
@@ -52,7 +52,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
                  hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed 
                  transition-all duration-200 shadow-md"
       >
-        ▶ Show Full Route
+        Show Full Route
       </button>
 
       <button
@@ -60,7 +60,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
         className="px-4 py-2.5 bg-slate-100 rounded-xl font-medium border border-slate-300
                  hover:bg-slate-200 transition-all duration-200"
       >
-        ↺ Reset
+        Reset
       </button>
 
       <button
@@ -69,7 +69,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
                  hover:bg-red-50 hover:border-red-300 hover:text-red-600 
                  transition-all duration-200 ml-auto"
       >
-        🔄 Reset All
+        Reset All
       </button>
     </div>
   );
